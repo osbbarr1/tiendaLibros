@@ -13,55 +13,92 @@
     <div class="container">
 
         <h1 class="mt-4 mb-4 text-center">Consulta de Libros - DyBaro</h1>
-        <div id="formulario" class="container border-top pt-4">
-        <div class="row">
-           
-            <div class="form-group col-md-6">
-                <label>libro</label>
-                <input type="text" id="txtNombreLibro">
-            </div>
-                <div class="form-group col-md-6">
-                    <label>autor</label>
-                    <select id='autores'>
-                        
-                    </select>
-                </div>
+          <div class="container">
+            <table class="table table-striped" id='librosConsultar'>
+                <thead>
+                    <tr>
+                        <th id="thLibro">Libro</th>
+                        <th id="thAutor">Autor</th>
+                        <th id="thPrecio">Precio</th>
+                        <th id="thPortada">Portada</th>
+                        <th id="thEditorial">Editorial</th>
+                        <th id="thDetalles">Detalles Libro</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-                <div class="form-group col-md-6">
-                    <label>precio</label>
-                    <input type="text" id="txtPrecio">
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Portada</label>
-                    <input type="text" id="txtPortada">
-                </div>
-                 <div class="form-group col-md-6">
-                    <label>Editorial</label>
-                    <input type="text" id="txtEditorial">
-                </div>
-                <div class="form-group col-md-12">
-                    <button id="btnRegistrarLibro">Registrar Libro</button>
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
+
+
       
     </div>
 
 
+<script id="template-librosConsulta" type="text/x-handlebars-template">
+ {{#each libros}}
+ <tr>
+     <td headers="thLibro">{{this.libro}}</td>
+     <td headers="thAutor">{{this.autor}}</td>
+     <td headers="thPrecio">{{this.precio}}</td>
+         {{#if this.portada}}
+            <td headers="thPortada">{{this.portada}}</td>
+         {{else}}
+            <td headers="thPortada">-</td>
+         {{/if}}
+     <td headers="thEditorial">{{this.editorial}}</td>
+     <td headers="thMostrarDatos">
+         <button  data-indice="{{@index}}" class="btn btn-default" > Detalle </button>
+
+     </td>
+
+ </tr>
+{{/each}}
+
+</script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/handlebars-v4.0.11.js"></script>
     <script>
 
         (function(){
 
 
             function init(){
-               
-                consultaLibros();
+               consultaLibros();
+                
+            }
+
+            function cargarTablaLibros(data){
+                var tbody = $('#librosConsultar tbody').html(''); 
+                
+                var source   = document.getElementById("template-librosConsulta").innerHTML;
+                var renderFilas = Handlebars.compile(source);
+
+                tbody.append(renderFilas({libros:data}));
             }
 
             function consultaLibros(){
                 $.ajax({
                     url:'http://localhost:5000/libros/consultar',
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultado){
+                        
+                         cargarTablaLibros(resultado.data)
+        
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            }
+
+            function consultarAutorPorId (){
+                 $.ajax({
+                    url:'http://localhost:5000/autor/:id',
                     type:'GET',
                     dataType:'json',
                     success:function(resultado){
@@ -83,7 +120,7 @@
                     error:function (err) {
                         console.error(err);
                     }
-                });                
+                });         
             } 
 
 

@@ -1,0 +1,212 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+
+<style type="text/css">
+
+
+
+#div-plantilla{
+  padding: 8px;
+  margin-right: 10px;
+  background-origin:  content-box;
+}
+
+#container{
+    margin-left:  15px;
+}
+</style>
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+  <div class="container-fluid">
+      
+          <h1 class="mt-4 mb-4 text-center">Consulta de Libros - DyBaro</h1>
+      
+        <div class="row" id="container">
+
+            
+         
+          
+        </div>
+
+
+   
+  </div>
+
+<div class="modal fade" tabindex="-1" id="libroConsulta" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Detalle del Libro</h4>
+          </div>
+                <div class="modal-body">
+           
+                   <div class="row">
+
+                    <div class="form-group col-md-4">
+                        <label for="txtAutor">Autor</label>
+                            <input type="text" name="autor" class="form-control " id="autor" readonly="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                        <label for="txtnombre">Nombre:</label>
+                            <input type="text" name="idupdate" id="nombre" class="form-control ide" readonly="">
+                        </div>   
+
+                        <div class="form-group col-md-4">
+                        <label for="txtPortada">Portada</label>
+                            <input type="text" name="portada" class="form-control " id="portada" readonly="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                         <label for="txtPrecio">Precio</label>
+                            <input type="textCelular" name="precio" class="form-control valor" id="precio" readonly="">
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+        </div>
+        </div>
+
+
+    <div id="div-plantilla" class="card" style="margin-bottom: 10px; width: 30%;" hidden>
+        <div class="card-body" >
+            <div class="row">
+              <div class="col-md-6">
+                <img src="img/logo.jpg"  style=" width: 140px; height: 100px; padding: 5px;">
+              </div>
+
+              <div class="col-md-6">
+                <h5 class="card-title">Libro</h5>
+                <p class="card-text">tarjeta: <span class="color-tarjeta"></span></p>
+                <a href="#" class="btn btn-danger">Borrar</a>
+              /div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+ <script type="text/javascript">
+
+
+  (function(){
+
+
+        function init(){
+           consultaLibros();
+        }
+           
+           function obtenerColor(){
+            var r = (Math.round(Math.random()* 127) + 127).toString(16);
+            var g = (Math.round(Math.random()* 127) + 127).toString(16);
+            var b = (Math.round(Math.random()* 127) + 127).toString(16);
+            
+            return '' + r + g + b;
+        }
+
+         function consultaLibros(){
+                $.ajax({
+                    url:'http://localhost:5000/libros/consultar',
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultado){                        
+                         cargarTarjetasLibros(resultado.data);   
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            }
+
+        function cargarTarjetasLibros(data){
+          
+          for (var i = 0 ; i < data.length; i++) {
+            var libro = data[i];
+
+            var color = obtenerColor();
+          
+            var tarjeta = $('#div-plantilla').clone()
+
+            tarjeta.css("background-color",'#'+color);
+            tarjeta.find('span.color-tarjeta').text(color);
+            tarjeta.find('a').on('click', detallesLibro);
+            tarjeta.find('a').attr('data_id', libro._id);
+
+            tarjeta.appendTo('#container').removeAttr('hidden');
+          }
+
+        }
+
+          function detallesLibro(){
+           var idLibro =  $(this).attr('data_id');
+           consultaLibrosxId(idLibro);
+           
+          }
+
+           function consultaLibrosxId(ide){
+                $.ajax({
+                    url:'http://localhost:5000/libro/'+ide,
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultadoLibroId){
+                        
+                        consultaAutorxId(resultadoLibroId);
+        
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            }
+
+             function consultaAutorxId(resultadoLibroId){
+                $.ajax({
+                    url:'http://localhost:5000/autor/'+resultadoLibroId.data.autor,
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultadoautor){
+
+                      $('#autor').val(resultadoautor.data.autor);
+                      $('#nombre').val(resultadoLibroId.data.nombre);
+                      $('#portada').val(resultadoLibroId.data.portada);
+                      $('#precio').val(resultadoLibroId.data.precio);
+                      $('#libroConsulta').modal('show');
+                        
+                        console.log(resultadoLibroId);
+        
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            }
+
+         function eliminar(){
+          $(this).parent().parent().remove();
+        }
+
+        init();
+  })();
+
+ </script>
+  </body>
+</html>
