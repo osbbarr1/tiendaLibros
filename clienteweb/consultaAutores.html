@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Libros DyBaro</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+</head>
+<body>
+
+    
+    <div class="container">
+
+        <h1 class="mt-4 mb-4 text-center">Consulta de Autores - DyBaro</h1>
+        <div id="formulario" class="container border-top pt-4">
+        <div class="row">
+           
+                <div class="form-group col-md-6">
+                    <label>autor</label>
+                    <select id='autores'>
+                        
+                    </select>
+                </div>
+ 
+            </div>
+        </div>
+      
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+
+        (function(){
+
+
+            function init(){
+               
+                cargarAutores();
+            }
+
+            function cargarAutores(){
+                $.ajax({
+                    url:'http://localhost:5000/autores/consultar',
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultado){
+                        
+                            console.log(resultado['data']);
+                        
+                        var selector = $('#autores').html('');
+                        var option = $('<option>');
+                        selector.append(option);
+                        for( var i =0; i < resultado['data'].length; i++){
+                            var autor = resultado['data'][i];
+                            var option = $('<option>').val(autor._id).text(autor.nombre);
+                            selector.append(option);
+                         
+
+                        }
+        
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            } 
+
+
+          init();   
+
+        })();
+
+
+
+
+    </script>
+</body>
+</html>

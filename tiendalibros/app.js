@@ -47,7 +47,9 @@ function registrarLibro(req, res){
         nombre: req.body.nombre,
         autor: new ObjectId(req.body.autor),
         precio: parseFloat(req.body.precio),
-        portada: req.body.portada
+        portada: req.body.portada,
+        editorial: req.body.editorial
+        
     };
 
     libros.insertOne(nuevoLibro, function(err, resultado){
@@ -163,6 +165,7 @@ function construirRespuestaDatos(data, mensaje) {
 
 
 MongoClient.connect('mongodb://jsvanegas:123@ds225028.mlab.com:25028/tiendalibros', function(err, client){
+  //MongoClient.connect('mongodb://dybaro:enaito145@ds225028.mlab.com:25028/dybaro', function(err, client){
 	if (err) { return console.log(err); }
 	db = client.db('tiendalibros');
 	app.listen(5000);
