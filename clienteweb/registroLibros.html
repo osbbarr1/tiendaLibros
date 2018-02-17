@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Libros</title>
+</head>
+<body>
+
+    <div>
+        <label>libro</label>
+        <input type="text" id="txtNombreLibro">
+        <label>autor</label>
+        <select id='autores'>
+            
+        </select>
+        <label>precio</label>
+        <input type="text" id="txtPrecio">
+        <label>Portada</label>
+        <input type="text" id="txtPortada">
+        <button id="btnRegistrarLibro">Registrar Libro</button>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+
+        (function(){
+
+
+            function init(){
+                configurarEventos();
+                cargarAutores();
+            }
+
+
+            function configurarEventos(){
+                $('#btnRegistrarLibro').on('click', registrarLibro); 
+                
+            }
+
+
+
+            function registrarLibro () {
+                $.ajax({
+                    url:'http://localhost:5000/libros/registrar',
+                    type:'POST',
+                    data:{
+                        nombre:$('#txtNombreLibro').val(),
+                        autor:$('#autores').val(),
+                        precio:$('#txtPrecio').val(),
+                        portada:$('#txtPortada').val()
+                    },
+                    dataType:'json',
+                    success:function(resultado){
+                        console.log(resultado);
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });
+            }
+
+            
+            function cargarAutores(){
+                $.ajax({
+                    url:'http://localhost:5000/autores/consultar',
+                    type:'GET',
+                    dataType:'json',
+                    success:function(resultado){
+                        
+                            console.log(resultado['data']);
+                        
+                        var selector = $('#autores').html('');
+                        var option = $('<option>');
+                        selector.append(option);
+                        for( var i =0; i < resultado['data'].length; i++){
+                            var autor = resultado['data'][i];
+                            var option = $('<option>').val(autor._id).text(autor.nombre);
+                            selector.append(option);
+                         
+
+                        }
+        
+                    },
+                    error:function (err) {
+                        console.error(err);
+                    }
+                });                
+            } 
+
+
+          init();   
+
+        })();
+
+
+
+
+    </script>
+</body>
+</html>
